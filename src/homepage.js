@@ -1,19 +1,16 @@
 import "antd/dist/antd.css";
 import React from 'react';
 import "./index.css";
-import { Layout, Menu, Card, Badge, Descriptions } from "antd";
+import { useEffect } from "react";
+import { Layout, Menu, Card, Badge } from "antd";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import {focusChange} from "./reducers/focusedRequestReducer";
-import {
-    MenuUnfoldOutlined,
-    MenuFoldOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-} from '@ant-design/icons';
+import { focusChange } from "./reducers/focusedRequestReducer";
 import RequestDescription from "./description";
-const { Header, Sider, Content, Footer } = Layout;
 
+import { initializeRequests } from './reducers/requestsReducer';
+
+const { Header, Sider, Content, Footer } = Layout;
 const getBadgeColor = (method) => {
     switch (method) {
         case "POST":
@@ -27,14 +24,24 @@ const getBadgeColor = (method) => {
     }
 };
 
+const getDate = (epoch) => {
+    const dateObject = new Date(epoch * 1000)
+    return dateObject.toLocaleString()
+}
+
 const Homepage = () => {
-    const dispatch = useDispatch()
-    const {requests, focusedRequestId} = useSelector(({requests, focusedRequestId}) =>{ return {requests, focusedRequestId}})
+    console.log("inside homepage")
+    const dispatch = useDispatch();
+    const { id } = useParams();
+    useEffect(() => {
+        dispatch(initializeRequests(id));
+    }, [dispatch])
+    const { requests, focusedRequestId } = useSelector(({ requests, focusedRequestId }) => { return { requests, focusedRequestId } })
     return (
         <Layout>
             <Sider
-            style={{ height: "100vh" }}
-            width={400}
+                style={{ height: "100vh" }}
+                width={400}
                 breakpoint="lg"
                 collapsedWidth="0"
                 onBreakpoint={broken => {
@@ -48,11 +55,9 @@ const Homepage = () => {
                 <Menu theme="dark" mode="vertical">
                     {requests.map((request) => (
                         <Menu.Item
-                        
-                            style={{ height: "16vh" }}
+                            style={{ height: "8vh" }}
                             key={request.id}
                             onClick={() => {
-                                console.log("clicked", request.id, request.method);
                                 dispatch(focusChange(request.id))
                             }}
                         >
@@ -60,10 +65,11 @@ const Homepage = () => {
                                 text={request.method}
                                 color={getBadgeColor(request.method)}
                             >
-                                <Card
-                                    style={{ height: "16vh" }}
+                                <Card className="custom-card"
+                                    style={{ height: "10vh" }}
+                                    // bodyStyle={{ padding: "0" }}
                                     title={request.id} size="small">
-                                    {request.epoch_timestamp}
+                                    {getDate(request.epoch_timestamp)}
                                 </Card>
                             </Badge.Ribbon>
                         </Menu.Item>
@@ -72,9 +78,15 @@ const Homepage = () => {
             </Sider>
             <Layout>
                 <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
-                <RequestDescription focusedRequest={requests.find((request)=> {return request.id === focusedRequestId})}/>
+                <Content>
+
+                    <RequestDescription focusedRequest={requests.find((request) => { return request.id === focusedRequestId })} />
+
+
+                </Content>
                 <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
             </Layout>
+
         </Layout>
     );
 }

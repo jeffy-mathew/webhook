@@ -1,21 +1,29 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
 import "antd/dist/antd.css";
 import "./index.css";
-import { useDispatch } from 'react-redux';
-import { Layout, Menu, Card, Badge } from "antd";
+import {
+  BrowserRouter as Router,
+  Switch, Route, Redirect
+} from "react-router-dom"
+import { v4 as uuidv4 } from 'uuid';
 import Homepage from "./homepage";
 
-import { initializeRequests } from './reducers/requestsReducer';
-const { Sider } = Layout;
 const App = () => {
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(initializeRequests()) 
-  },[dispatch]) 
-   
+  const generateRandomUUID = () => {
+    return `/${uuidv4()}`
+  }
   return (
-    <Homepage></Homepage>
+    <Router>
+      <Switch>
+        <Route path="/">
+          <Redirect to={generateRandomUUID()} />
+        </Route>
+        <Route path="/:id">
+          {console.log("routing to homepage", window.location.href)}
+          <Homepage />
+          {console.log("routed to homepage", window.location.href)}
+        </Route>
+      </Switch>
+    </Router>
   )
 };
 
