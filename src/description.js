@@ -4,15 +4,14 @@ import 'antd/dist/antd.css';
 
 const RequestDescription = ({ focusedRequest }) => {
     if (focusedRequest !== undefined) {
-        console.log(focusedRequest)
         return (
             <>
                 <Row>
                     <Col span={12} >
                         <Descriptions title="Request Details" bordered style={{ padding: "10px" }} column={1} layout="horizontal">
-                            <Descriptions.Item label="ID">{focusedRequest.id}</Descriptions.Item>
+                            <Descriptions.Item label="ID">{focusedRequest._id}</Descriptions.Item>
                             <Descriptions.Item label={focusedRequest.method}>{focusedRequest.url}</Descriptions.Item>
-                            <Descriptions.Item label="Epoch Timestamp">{focusedRequest.epoch_timestamp}</Descriptions.Item>
+                            <Descriptions.Item label="Epoch Timestamp">{focusedRequest.epoch_time_stamp}</Descriptions.Item>
                             <Descriptions.Item label="Host">{focusedRequest.host}</Descriptions.Item>
                         </Descriptions>
                     </Col>
@@ -25,9 +24,37 @@ const RequestDescription = ({ focusedRequest }) => {
                     </Col>
                 </Row>
                 <Row>
-                    <div>
+                    <Col span={12} >
+                        <div>
+                            <Descriptions title="Query Params" bordered style={{ padding: "10px" }} column={1} layout="horizontal">
+                                {
 
-                    </div>
+                                    focusedRequest.query_params && Object.keys(focusedRequest.query_params).length > 0
+                                        ?
+                                        Object.entries(focusedRequest.query_params).map(([key, value]) => (
+                                            <Descriptions.Item label={key}>{value}</Descriptions.Item>
+                                        ))
+                                        : <div>(empty)</div>
+                                }
+                            </Descriptions>
+                        </div>
+                    </Col>
+                    <Col span={12} >
+
+                        <div>
+                            <Descriptions title="Form Values" bordered style={{ padding: "10px" }} column={1} layout="horizontal">
+
+                                {
+                                    focusedRequest.form_values
+                                        ?
+                                        Object.entries(focusedRequest.form_values).map(([key, value]) => (
+                                            <Descriptions.Item label={key}>{value}</Descriptions.Item>
+                                        ))
+                                        : <div>(empty)</div>
+                                }
+                            </Descriptions>
+                        </div>
+                    </Col>
                 </Row>
 
             </>

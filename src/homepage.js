@@ -2,7 +2,7 @@ import "antd/dist/antd.css";
 import React from 'react';
 import "./index.css";
 import { useEffect } from "react";
-import { Layout, Menu, Card, Badge } from "antd";
+import { Layout, Menu, Card, Badge, Empty } from "antd";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { focusChange } from "./reducers/focusedRequestReducer";
@@ -30,12 +30,11 @@ const getDate = (epoch) => {
 }
 
 const Homepage = () => {
-    console.log("inside homepage")
     const dispatch = useDispatch();
     const { id } = useParams();
     useEffect(() => {
         dispatch(initializeRequests(id));
-    }, [dispatch])
+    }, [id])
     const { requests, focusedRequestId } = useSelector(({ requests, focusedRequestId }) => { return { requests, focusedRequestId } })
     return (
         <Layout>
@@ -44,44 +43,45 @@ const Homepage = () => {
                 width={400}
                 breakpoint="lg"
                 collapsedWidth="0"
-                onBreakpoint={broken => {
-                    console.log(broken);
-                }}
-                onCollapse={(collapsed, type) => {
-                    console.log(collapsed, type);
-                }}
             >
                 <div className="logo" />
                 <Menu theme="dark" mode="vertical">
-                    {requests.map((request) => (
-                        <Menu.Item
-                            style={{ height: "8vh" }}
-                            key={request.id}
-                            onClick={() => {
-                                dispatch(focusChange(request.id))
-                            }}
-                        >
-                            <Badge.Ribbon
-                                text={request.method}
-                                color={getBadgeColor(request.method)}
-                            >
-                                <Card className="custom-card"
-                                    style={{ height: "10vh" }}
-                                    // bodyStyle={{ padding: "0" }}
-                                    title={request.id} size="small">
-                                    {getDate(request.epoch_timestamp)}
-                                </Card>
-                            </Badge.Ribbon>
-                        </Menu.Item>
-                    ))}
+                    {
+                        requests
+                            ? requests.map((request) => (
+                                <Menu.Item
+                                    style={{ height: "8vh" }}
+                                    key={request._id}
+                                    onClick={() => {
+                                        dispatch(focusChange(request._id))
+                                    }}
+                                >
+                                    <Badge.Ribbon
+                                        text={request.method}
+                                        color={getBadgeColor(request.method)}
+                                    >
+                                        <Card className="custom-card"
+                                            style={{ height: "10vh" }}
+                                            // bodyStyle={{ padding: "0" }}
+                                            title={request.id} size="small">
+                                            {getDate(request.epoch_time_stamp)}
+                                        </Card>
+                                    </Badge.Ribbon>
+                                </Menu.Item>
+                            ))
+                            : <div>Waiting for first request</div>
+                    }
                 </Menu>
             </Sider>
             <Layout>
                 <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
                 <Content>
+                    {
+                        requests
+                            ? <RequestDescription focusedRequest={requests.find((request) => { return request._id === focusedRequestId })} />
 
-                    <RequestDescription focusedRequest={requests.find((request) => { return request.id === focusedRequestId })} />
-
+                            : <Empty />
+                    }
 
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>

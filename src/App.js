@@ -13,16 +13,17 @@ const App = () => {
   }
   return (
     <Router>
-      <Switch>
-        <Route path="/">
-          <Redirect to={generateRandomUUID()} />
-        </Route>
-        <Route path="/:id">
-          {console.log("routing to homepage", window.location.href)}
-          <Homepage />
-          {console.log("routed to homepage", window.location.href)}
-        </Route>
-      </Switch>
+      <div>
+        <Switch>
+          <Route path="/:id">
+            <Homepage />
+          </Route>
+          <Route path="/">
+            <Redirect to={generateRandomUUID()} />
+          </Route>
+        </Switch>
+      </div>
+
     </Router>
   )
 };

@@ -10,10 +10,10 @@ const requestsReducer = (state = [], action) => {
 
 export const initializeRequests = (id) => {
   return async dispatch => {
-    const notes = await requestsService.getAll(id)
+    const requests = await requestsService.getAll(id)
     dispatch({
       type: 'INIT_REQUESTS',
-      data: notes,
+      data: requests,
     })
   }
 }
